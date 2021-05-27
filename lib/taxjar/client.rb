@@ -17,6 +17,7 @@ module Taxjar
     attr_accessor :api_url
     attr_accessor :headers
     attr_accessor :http_proxy
+    attr_accessor :custom_nexus_regions
 
     def initialize(options = {})
       options.each do |key, value|
@@ -30,6 +31,7 @@ module Taxjar
     end
 
     def set_api_config(key, value)
+      validate_nexus(value) if key == 'custom_nexus_regions'
       instance_variable_set("@#{key}", value)
     end
 
@@ -46,6 +48,12 @@ module Taxjar
       ruby_version = "ruby #{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
       openSSL_version = OpenSSL::OPENSSL_LIBRARY_VERSION
       "TaxJar/Ruby (#{platform}; #{ruby_version}; #{openSSL_version}) taxjar-ruby/#{Taxjar::Version}"
+    end
+
+    private
+
+    def validate_nexus(value)
+      raise 'custom_nexus_regions must be an array of 2-character strings' unless value.is_a?(Array) && value.all? { |v| v.is_a?(String) && v.length == 2 }
     end
   end
 end

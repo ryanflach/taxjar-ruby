@@ -31,6 +31,18 @@ describe Taxjar::Client do
       client.set_api_config('headers', { 'X-TJ-Expected-Response' => 422 })
       expect(client.headers).to eq({ 'X-TJ-Expected-Response' => 422 })
     end
+
+    it 'sets custom nexus regions when valid format' do
+      client = Taxjar::Client.new(api_key: 'AK')
+      client.set_api_config('custom_nexus_regions', ['AZ', 'PA', 'CA'])
+      expect(client.custom_nexus_regions).to eq(['AZ', 'PA', 'CA'])
+    end
+
+    it 'raises on invalid format of custom nexus regions' do
+      client = Taxjar::Client.new(api_key: 'AK')
+      expect { client.set_api_config('custom_nexus_regions', [123, 'HELLO', nil]) }
+        .to raise_error('custom_nexus_regions must be an array of 2-character strings')
+    end
   end
 
   describe "#get_api_config" do
